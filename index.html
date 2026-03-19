@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alchemyx — Mappa Media Partner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-hex {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .logo-text span { color: #a78bfa; }
+    .logo-sep { color: #30363d; margin: 0 2px; }
+    .logo-sub { font-size: 13px; color: #6b7280; font-weight: 400; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #data-status {
+      font-size: 12px;
+      color: #6b7280;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: white;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: #21262d;
+      color: #9ca3af;
+      border: 1px solid #30363d;
+    }
+    .btn-ghost:hover { background: #30363d; color: #c9d1d9; }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── MAP AREA ── */
+    .map-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .legend-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #4b5563;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 2px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #9ca3af;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .legend-item:hover { background: #21262d; border-color: #30363d; }
+    .legend-item.active-filter { background: #21262d; border-color: #4b5563; color: #e2e8f0; }
+
+    .legend-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-sep {
+      width: 1px;
+      height: 18px;
+      background: #30363d;
+      margin: 0 6px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* ── SVG MAP ── */
+    #map-container {
+      flex: 1;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #161b22;
+      border: 1px solid #30363d;
+    }
+
+    #map-svg { width: 100%; height: 100%; display: block; }
+
+    .region-path {
+      fill: #1a2438;
+      stroke: #2d4263;
+      stroke-width: 0.7;
+      cursor: pointer;
+      transition: fill 0.15s;
+    }
+
+    .region-path:hover { fill: #263552; }
+    .region-path.has-data { fill: #172039; stroke: #3a5a9a; }
+    .region-path.has-data:hover { fill: #1e2d52; }
+    .region-path.highlighted { fill: #243260 !important; stroke: #6366f1; stroke-width: 1.5; }
+
+    .region-label {
+      font-size: 8.5px;
+      fill: #4b5563;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+      font-weight: 500;
+    }
+
+    /* ── DOTS ── */
+    .dot-glow {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    .media-dot {
+      cursor: pointer;
+      stroke: rgba(0,0,0,0.4);
+      stroke-width: 1;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+      transition: r 0.12s, stroke-width 0.12s;
+    }
+
+    .media-dot:hover {
+      stroke: white;
+      stroke-width: 1.5;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 0;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #161b22;
+      border-left: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.open { width: 300px; }
+
+    .sidebar-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .sidebar-title { font-size: 16px; font-weight: 700; color: #e2e8f0; }
+    .sidebar-meta { font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+    .sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+
+    .sidebar-body::-webkit-scrollbar { width: 4px; }
+    .sidebar-body::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+
+    .mezzo-section { margin-bottom: 18px; }
+
+    .mezzo-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .mezzo-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .mezzo-count {
+      font-size: 11px;
+      color: #6b7280;
+      margin-left: auto;
+    }
+
+    .emittente-row {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 7px;
+      padding: 9px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .emittente-row:hover { border-color: #3d4a5c; }
+    .emittente-name { font-size: 13px; font-weight: 500; color: #d1d5db; }
+
+    /* ── STATO BADGES ── */
+    .badge {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-chiuso       { background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-trattativa   { background: rgba(245,158,11,0.18);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-inscadenza   { background: rgba(239,68,68,0.18);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-proposta     { background: rgba(59,130,246,0.18);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .badge-default      { background: rgba(107,114,128,0.18); color: #9ca3af; border: 1px solid rgba(107,114,128,0.3); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      width: 520px;
+      max-width: calc(100vw - 48px);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      animation: modalIn 0.18s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .modal-mezzo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .modal-region-line { font-size: 13px; color: #6b7280; }
+
+    .modal-close {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #9ca3af;
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: #30363d; color: #e2e8f0; }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+
+    .emittenti-table { width: 100%; border-collapse: collapse; }
+
+    .emittenti-table thead th {
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4b5563;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .emittenti-table tbody td {
+      padding: 11px 10px;
+      font-size: 13px;
+      color: #c9d1d9;
+      border-bottom: 1px solid #161b22;
+    }
+
+    .emittenti-table tbody tr:last-child td { border-bottom: none; }
+    .emittenti-table tbody tr:hover td { background: #0d1117; }
+
+    .row-num { color: #4b5563; font-size: 12px; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: #0d1117;
+      border-top: 1px solid #21262d;
+      padding: 8px 24px;
+      display: flex;
+      gap: 28px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .stat { font-size: 12px; color: #6b7280; }
+    .stat strong { color: #a78bfa; font-size: 14px; margin-right: 3px; }
+
+    /* ── TOOLTIP ── */
+    #tooltip {
+      position: fixed;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 200;
+      display: none;
+      max-width: 220px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    .tooltip-region { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+    .tooltip-row { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; color: #9ca3af; }
+    .tooltip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── EMPTY STATE ── */
+    .empty-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: #4b5563;
+      pointer-events: none;
+    }
+    .empty-overlay svg { opacity: 0.3; }
+    .empty-overlay p { font-size: 14px; }
+
+    /* ── LOADING ── */
+    .loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13,17,23,0.8);
+      border-radius: 12px;
+      font-size: 13px;
+      color: #6b7280;
+      z-index: 10;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #30363d;
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FILTER ACTIVE INDICATOR ── */
+    .filter-active-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a78bfa;
+      display: inline-block;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* ── CLOSE BTN SMALL ── */
+    .close-btn-sm {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 2px;
+      transition: color 0.15s;
+    }
+    .close-btn-sm:hover { color: #e2e8f0; }
+
+    /* ── GOOGLE SHEETS STATUS ── */
+    .gs-connected {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 7px;
+      padding: 5px 10px;
+      color: #34d399;
+    }
+
+    .gs-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #34d399;
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .gs-disconnected {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 7px;
+      padding: 5px 10px;
+      color: #6b7280;
+    }
+
+    /* ── SHEET MODAL ── */
+    .sheet-modal-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      width: 520px;
+      max-width: calc(100vw - 48px);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      animation: modalIn 0.18s ease;
+    }
+
+    .sheet-modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sheet-modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sheet-modal-body { padding: 20px 24px; }
+
+    .steps-list {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .step:last-child { margin-bottom: 0; }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #a78bfa;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step strong { color: #e2e8f0; }
+    .step code {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      color: #a78bfa;
+      font-family: monospace;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .url-input {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: monospace;
+    }
+
+    .url-input::placeholder { color: #4b5563; }
+    .url-input:focus { border-color: #7c3aed; }
+
+    .auto-refresh-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #9ca3af;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle.on { background: #7c3aed; border-color: #7c3aed; }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(16px); }
+
+    .sheet-modal-footer {
+      padding: 14px 24px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid #21262d;
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      box-shadow: 0 2px 8px rgba(5,150,105,0.35);
+    }
+    .btn-green:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .url-error { font-size: 12px; color: #f87171; margin-top: 6px; display: none; }
+
+    /* ── REFRESH SPIN ── */
+    .refreshing #refresh-icon { animation: spin 0.7s linear infinite; }
+
+    /* ── LAST UPDATE ── */
+    #last-update {
+      font-size: 11px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-hex">⬡</div>
+    <div>
+      <span class="logo-text"><span>Alchemyx</span> <span class="logo-sep">|</span> <span class="logo-sub">Mappa Media Partner</span></span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="last-update"></span>
+
+    <!-- Stato connessione -->
+    <div id="gs-status-disconnected" class="gs-disconnected" style="cursor:pointer" onclick="openSheetModal()" title="Connetti Google Sheets">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Nessun foglio connesso
+    </div>
+
+    <div id="gs-status-connected" class="gs-connected" style="display:none;cursor:pointer" onclick="openSheetModal()" title="Impostazioni foglio">
+      <div class="gs-pulse"></div>
+      <span id="gs-sheet-name">Google Sheets</span>
+      <button id="refresh-icon" onclick="event.stopPropagation();manualRefresh()" title="Aggiorna ora"
+        style="background:none;border:none;color:#34d399;cursor:pointer;font-size:14px;padding:0;line-height:1">↻</button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="loadDemoData()" title="Carica dati demo">Demo</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('fileInput').click()" title="Importa Excel locale">
+      ↑ Excel
+    </button>
+    <button class="btn btn-primary" onclick="openSheetModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Connetti Sheet
+    </button>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="loadExcel(event)">
+  </div>
+</header>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main">
+
+  <!-- MAP AREA -->
+  <div class="map-area">
+
+    <!-- Legend -->
+    <div class="legend" id="legend-bar">
+      <span class="legend-section-title">Mezzi</span>
+      <!-- populated by JS -->
+      <div class="legend-sep"></div>
+      <span class="legend-section-title">Stato</span>
+      <span class="status-pill badge badge-chiuso">Chiuso</span>
+      <span class="status-pill badge badge-trattativa">Trattativa</span>
+      <span class="status-pill badge badge-inscadenza">In scadenza</span>
+      <span class="status-pill badge badge-proposta">Proposta</span>
+    </div>
+
+    <!-- Map -->
+    <div id="map-container">
+      <div class="loader" id="map-loader">
+        <div class="spinner"></div> Caricamento mappa…
+      </div>
+      <svg id="map-svg"></svg>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <div class="sidebar-title" id="sidebar-region-name">—</div>
+        <div class="sidebar-meta" id="sidebar-meta"></div>
+      </div>
+      <button class="close-btn-sm" onclick="closeSidebar()">×</button>
+    </div>
+    <div class="sidebar-body" id="sidebar-body"></div>
+  </div>
+
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><strong id="s-regioni">0</strong> regioni coperte</div>
+  <div class="stat"><strong id="s-mezzi">0</strong> mezzi attivi</div>
+  <div class="stat"><strong id="s-emittenti">0</strong> emittenti</div>
+  <div class="stat"><strong id="s-chiusi">0</strong> accordi chiusi</div>
+  <div class="stat" style="margin-left:auto;color:#4b5563;font-size:11px">
+    Clicca un <strong style="color:#6b7280">pallino</strong> per i dettagli · Clicca una <strong style="color:#6b7280">regione</strong> per il riepilogo
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL ═══════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div id="modal-chip"></div>
+        <div class="modal-region-line" id="modal-region-line"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="emittenti-table">
+        <thead>
+          <tr>
+            <th style="width:32px">#</th>
+            <th>Emittente</th>
+            <th style="width:120px">Stato accordo</th>
+          </tr>
+        </thead>
+        <tbody id="modal-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ GOOGLE SHEETS MODAL ═══════════════════ -->
+<div class="modal-overlay" id="sheet-modal-overlay" onclick="if(event.target===this)closeSheetModal()">
+  <div class="sheet-modal-box">
+    <div class="sheet-modal-header">
+      <div class="sheet-modal-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Connetti Google Sheets
+      </div>
+      <button class="modal-close" onclick="closeSheetModal()">×</button>
+    </div>
+    <div class="sheet-modal-body">
+
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>Apri il tuo Google Sheet con i dati dei media partner</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>Vai su <strong>File → Condividi → Pubblica sul web</strong></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>Seleziona il foglio → Formato: <code>Valori separati da virgola (.csv)</code> → clicca <strong>Pubblica</strong></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>Copia il link generato e incollalo qui sotto</div>
+        </div>
+      </div>
+
+      <div class="input-label">URL Google Sheet (CSV)</div>
+      <input
+        type="url"
+        id="sheet-url-input"
+        class="url-input"
+        placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+      />
+      <div class="url-error" id="url-error">URL non valido. Assicurati di usare il link "Pubblica sul web" con formato CSV.</div>
+
+      <label class="auto-refresh-row">
+        <div class="toggle" id="auto-refresh-toggle" onclick="toggleAutoRefresh()"></div>
+        <span>Auto-aggiornamento ogni 5 minuti</span>
+        <span style="font-size:11px;color:#4b5563;margin-left:4px">(aggiorna la mappa ogni volta che Fabio modifica il foglio)</span>
+      </label>
+
+    </div>
+    <div class="sheet-modal-footer">
+      <button class="btn btn-ghost" onclick="disconnectSheet()">Disconnetti</button>
+      <button class="btn btn-ghost" onclick="closeSheetModal()">Annulla</button>
+      <button class="btn btn-green" onclick="connectSheet()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Connetti
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"></div>
+
+<!-- ═══════════════════ SCRIPT ═══════════════════ -->
+<script>
+'use strict';
+
+/* ── CONFIG ── */
+const MEDIA = {
+  'Online':  { color: '#3B82F6', icon: '🌐' },
+  'DOOH':    { color: '#F59E0B', icon: '📺' },
+  'Radio':   { color: '#8B5CF6', icon: '📻' },
+  'CTV':     { color: '#EF4444', icon: '📡' },
+  'Cinema':  { color: '#10B981', icon: '🎬' },
+};
+
+// Normalize mezzo name to canonical form
+function normalizeMezzo(raw) {
+  if (!raw) return raw;
+  const map = {
+    'radio': 'Radio', 'RADIO': 'Radio',
+    'dooh': 'DOOH',   'Dooh': 'DOOH',
+    'online': 'Online',
+    'ctv': 'CTV',
+    'cinema': 'Cinema',
+  };
+  const trimmed = raw.toString().trim();
+  return map[trimmed] || (map[trimmed.toLowerCase()] ? map[trimmed.toLowerCase()] : trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase());
+}
+
+// Classify stato for badge color based on text content
+function classifyStato(stato) {
+  if (!stato) return 'badge-default';
+  const s = stato.toLowerCase();
+  // Verde: accordo concluso in qualsiasi forma
+  if (s.includes('chiuso') || s.includes('firmato') || s.includes('attivo') ||
+      s.includes('raggiunto') || s.includes('concluso') || s.includes('siglato')) return 'badge-chiuso';
+  if (s.includes('scadenz')) return 'badge-inscadenza';
+  // Blu: bozza inviata o call avanzate (2°, 3°)
+  if (s.includes('bozza') || s.includes('2°') || s.includes('3°') || s.includes('4°')) return 'badge-proposta';
+  // Giallo: prime call / trattativa in corso
+  if (s.includes('call') || s.includes('trattativa') || s.includes('contatt')) return 'badge-trattativa';
+  return 'badge-default';
+}
+
+const STATO_CLASS = {
+  'Chiuso':       'badge-chiuso',
+  'Trattativa':   'badge-trattativa',
+  'In scadenza':  'badge-inscadenza',
+  'Proposta':     'badge-proposta',
+};
+
+// Region name normalization map (what the user might type → official GeoJSON name)
+const REGION_ALIASES = {
+  'valle daosta': "Valle d'Aosta/Vallée d'Aoste",
+  "valle d'aosta": "Valle d'Aosta/Vallée d'Aoste",
+  'vallee daosta': "Valle d'Aosta/Vallée d'Aoste",
+  'piemonte': 'Piemonte',
+  'lombardia': 'Lombardia',
+  'liguria': 'Liguria',
+  'trentino': 'Trentino-Alto Adige/Südtirol',
+  'trentino alto adige': 'Trentino-Alto Adige/Südtirol',
+  'trentino-alto adige': 'Trentino-Alto Adige/Südtirol',
+  'sudtirol': 'Trentino-Alto Adige/Südtirol',
+  'veneto': 'Veneto',
+  'friuli': 'Friuli-Venezia Giulia',
+  'friuli venezia giulia': 'Friuli-Venezia Giulia',
+  'friuli-venezia giulia': 'Friuli-Venezia Giulia',
+  'emilia': 'Emilia-Romagna',
+  'emilia romagna': 'Emilia-Romagna',
+  'emilia-romagna': 'Emilia-Romagna',
+  'toscana': 'Toscana',
+  'marche': 'Marche',
+  'umbria': 'Umbria',
+  'lazio': 'Lazio',
+  'abruzzo': 'Abruzzo',
+  'molise': 'Molise',
+  'campania': 'Campania',
+  'puglia': 'Puglia',
+  'basilicata': 'Basilicata',
+  'calabria': 'Calabria',
+  'sicilia': 'Sicilia',
+  'sardegna': 'Sardegna',
+};
+
+/* ── DATI REALI (64 record aggiornati) ── */
+const DEMO = [
+  { regione: "Piemonte", mezzo: "RADIO", nome_emittente: "Radio Manila", stato_accordo: "1° Call" },
+  { regione: "Piemonte", mezzo: "RADIO", nome_emittente: "Discoradio", stato_accordo: "1° Call" },
+  { regione: "Lombardia", mezzo: "RADIO", nome_emittente: "Radio Lombardia", stato_accordo: "1° Call" },
+  { regione: "Lombardia", mezzo: "RADIO", nome_emittente: "Viva FM", stato_accordo: "1° Call" },
+  { regione: "Lombardia", mezzo: "RADIO", nome_emittente: "Discoradio", stato_accordo: "1° Call" },
+  { regione: "Lombardia", mezzo: "RADIO", nome_emittente: "Radio Millenium", stato_accordo: "1° Call" },
+  { regione: "Toscana", mezzo: "RADIO", nome_emittente: "Lady Radio", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Toscana", mezzo: "RADIO", nome_emittente: "RDF", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Toscana", mezzo: "RADIO", nome_emittente: "Mitology", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Lazio", mezzo: "RADIO", nome_emittente: "DSR", stato_accordo: "1° Call" },
+  { regione: "Lazio", mezzo: "RADIO", nome_emittente: "RAM", stato_accordo: "1° Call" },
+  { regione: "Puglia", mezzo: "RADIO", nome_emittente: "CiccioRiccio", stato_accordo: "2° Call - inviato bozza accordo" },
+  { regione: "Sicilia", mezzo: "RADIO", nome_emittente: "R.Margherita + Arcobaleno", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Sicilia", mezzo: "RADIO", nome_emittente: "Radio Arcobaleno", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Sicilia", mezzo: "RADIO", nome_emittente: "Radio Studio Centrale", stato_accordo: "1° Call - inviato bozza accordo" },
+  { regione: "Piemonte", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Liguria", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lombardia", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Trentino-Alto Adige", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Veneto", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Friuli-Venezia Giulia", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Emilia-Romagna", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Toscana", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Marche", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Umbria", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lazio", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Abruzzo", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Campania", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Puglia", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Basilicata", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Sicilia", mezzo: "CINEMA", nome_emittente: "UCI Cinemas", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Piemonte", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Liguria", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lombardia", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Veneto", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Friuli-Venezia Giulia", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Emilia-Romagna", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Toscana", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Umbria", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lazio", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Abruzzo", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Campania", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Calabria", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Sardegna", mezzo: "CINEMA", nome_emittente: "The Space Cinema", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Valle d'Aosta", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Piemonte", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Liguria", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Lombardia", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Trentino-Alto Adige", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Veneto", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Friuli-Venezia Giulia", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Emilia-Romagna", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Toscana", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Marche", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Umbria", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Lazio", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Abruzzo", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Molise", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Campania", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Puglia", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Basilicata", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Calabria", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Sicilia", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  { regione: "Sardegna", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+];
+
+/* ── STATE ── */
+let currentData = {};   // { "Lombardia": { "Radio": [{nome,stato}, ...], ... } }
+let geoData = null;
+let svgEl, pathGen;
+let centroids = {};     // { "Lombardia": [cx, cy] }
+let activeFilter = null; // media type filter from legend
+
+/* ═══════════════════ INIT ═══════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  buildLegend();
+  initMap();
+});
+
+/* ═══════════════════ LEGEND ═══════════════════ */
+function buildLegend() {
+  const bar = document.getElementById('legend-bar');
+  // Insert media items before the separator
+  const sep = bar.querySelector('.legend-sep');
+  Object.entries(MEDIA).forEach(([mezzo, cfg]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.mezzo = mezzo;
+    item.innerHTML = `
+      <div class="legend-dot" style="background:${cfg.color};box-shadow:0 0 5px ${cfg.color}88"></div>
+      <span>${cfg.icon} ${mezzo}</span>`;
+    item.addEventListener('click', () => toggleFilter(mezzo, item));
+    bar.insertBefore(item, sep);
+  });
+}
+
+function toggleFilter(mezzo, el) {
+  const items = document.querySelectorAll('.legend-item');
+  if (activeFilter === mezzo) {
+    activeFilter = null;
+    items.forEach(i => i.classList.remove('active-filter'));
+  } else {
+    activeFilter = mezzo;
+    items.forEach(i => {
+      i.classList.toggle('active-filter', i.dataset.mezzo === mezzo);
+    });
+  }
+  renderDots();
+}
+
+/* ═══════════════════ MAP INIT ═══════════════════ */
+async function initMap() {
+  const container = document.getElementById('map-container');
+  const W = container.clientWidth  || 700;
+  const H = container.clientHeight || 600;
+
+  svgEl = d3.select('#map-svg').attr('viewBox', `0 0 ${W} ${H}`);
+  svgEl.selectAll('*').remove();
+
+  // Groups (order matters: regions → labels → dots)
+  svgEl.append('g').attr('id', 'g-regions');
+  svgEl.append('g').attr('id', 'g-labels');
+  svgEl.append('g').attr('id', 'g-dots');
+
+  try {
+    geoData = await fetch(
+      'https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_IT_regions.geojson'
+    ).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  } catch (err) {
+    document.getElementById('map-loader').innerHTML =
+      '<span style="color:#f87171">⚠ Errore caricamento mappa. Verificare la connessione.</span>';
+    return;
+  }
+
+  const proj = d3.geoMercator().fitExtent([[24, 20], [W - 24, H - 20]], geoData);
+  pathGen = d3.geoPath().projection(proj);
+
+  // Draw regions
+  d3.select('#g-regions')
+    .selectAll('path')
+    .data(geoData.features)
+    .join('path')
+    .attr('class', 'region-path')
+    .attr('d', pathGen)
+    .attr('data-name', d => regionName(d))
+    .on('click', (event, d) => {
+      const name = regionName(d);
+      if (currentData[name]) showSidebar(name);
+    })
+    .on('mouseover', (event, d) => showRegionTooltip(event, regionName(d)))
+    .on('mousemove', moveTooltip)
+    .on('mouseout', hideTooltip);
+
+  // Compute centroids
+  geoData.features.forEach(f => {
+    const c = pathGen.centroid(f);
+    if (!isNaN(c[0])) centroids[regionName(f)] = c;
+  });
+
+  // Draw labels
+  d3.select('#g-labels')
+    .selectAll('text')
+    .data(geoData.features)
+    .join('text')
+    .attr('class', 'region-label')
+    .attr('x', d => pathGen.centroid(d)[0])
+    .attr('y', d => pathGen.centroid(d)[1])
+    .text(d => {
+      const n = regionName(d);
+      // Abbreviate long names
+      const abbr = {
+        "Valle d'Aosta/Vallée d'Aoste": "V.d'Aosta",
+        'Trentino-Alto Adige/Südtirol': 'T.-A.A.',
+        'Friuli-Venezia Giulia': 'Friuli V.G.',
+        'Emilia-Romagna': 'Emilia-R.',
+      };
+      return abbr[n] || n;
+    });
+
+  document.getElementById('map-loader').style.display = 'none';
+
+  // Load demo data
+  loadDemoData();
+}
+
+function regionName(feature) {
+  return feature.properties.reg_name
+    || feature.properties.NOME_REG
+    || feature.properties.name
+    || '';
+}
+
+/* ═══════════════════ DATA PROCESSING ═══════════════════ */
+function normalizeRegion(raw) {
+  if (!raw) return null;
+  const key = raw.trim().toLowerCase()
+    .replace(/['''`]/g, "'")
+    .replace(/[-–—]/g, ' ')
+    .replace(/\s+/g, ' ');
+  return REGION_ALIASES[key] || raw.trim();
+}
+
+function processRows(rows) {
+  currentData = {};
+  rows.forEach(r => {
+    const regRaw = r.regione?.toString().trim();
+    const mezzoRaw = r.mezzo?.toString().trim();
+    const nome   = r.nome_emittente?.toString().trim();
+    const stato  = r.stato_accordo?.toString().trim() || 'N/D';
+    if (!regRaw || !mezzoRaw || !nome) return;
+    const reg   = normalizeRegion(regRaw);
+    const mezzo = normalizeMezzo(mezzoRaw);
+    if (!currentData[reg]) currentData[reg] = {};
+    if (!currentData[reg][mezzo]) currentData[reg][mezzo] = [];
+    currentData[reg][mezzo].push({ nome, stato });
+  });
+  updateStats();
+  renderDots();
+  closeSidebar();
+}
+
+function loadDemoData() {
+  processRows(DEMO);
+  document.getElementById('data-status').textContent = '⚡ Demo attiva';
+}
+
+function loadExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+      const mapped = raw.map(r => ({
+        regione:        r['Regione']       || r['regione']       || r['REGIONE']       || '',
+        mezzo:          r['Mezzo']         || r['mezzo']         || r['MEZZO']         || '',
+        nome_emittente: r['Nome_Emittente']|| r['Nome Emittente']|| r['nome_emittente']
+                        || r['Emittente']  || r['emittente']     || r['EMITTENTE']     || '',
+        stato_accordo:  r['Stato_Accordo'] || r['Stato Accordo'] || r['stato_accordo']
+                        || r['Stato']      || r['stato']         || r['STATO']         || 'N/D',
+      })).filter(r => r.regione && r.mezzo && r.nome_emittente);
+
+      if (!mapped.length) {
+        alert('Nessuna riga valida trovata. Verifica che il file abbia le colonne:\nRegione | Mezzo | Nome_Emittente | Stato_Accordo');
+        return;
+      }
+
+      processRows(mapped);
+      document.getElementById('data-status').textContent = `📄 ${file.name} (${mapped.length} righe)`;
+    } catch (err) {
+      alert('Errore lettura file: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = '';
+}
+
+/* ═══════════════════ DOTS ═══════════════════ */
+function renderDots() {
+  if (!svgEl) return;
+
+  const g = d3.select('#g-dots');
+  g.selectAll('*').remove();
+
+  // Update region fill classes
+  d3.selectAll('.region-path').each(function(d) {
+    const name = regionName(d);
+    d3.select(this).classed('has-data', !!currentData[name]);
+  });
+
+  const DOT_R   = 6;
+  const SPACING = 15;
+
+  Object.entries(currentData).forEach(([regione, mezzi]) => {
+    const centroid = centroids[regione];
+    if (!centroid) return;
+
+    let prezenti = Object.keys(mezzi).filter(m => mezzi[m].length > 0);
+    // Apply filter
+    if (activeFilter) prezenti = prezenti.filter(m => m === activeFilter);
+    if (!prezenti.length) return;
+
+    const n = prezenti.length;
+    // Group container — dots row centered on centroid
+    const grp = g.append('g')
+      .attr('class', 'dot-group')
+      .attr('data-region', regione);
+
+    prezenti.forEach((mezzo, i) => {
+      const cfg = MEDIA[mezzo] || { color: '#888', icon: '' };
+      const cx  = centroid[0] + (i - (n - 1) / 2) * SPACING;
+      const cy  = centroid[1];
+
+      // Glow halo
+      grp.append('circle')
+        .attr('class', 'dot-glow')
+        .attr('cx', cx).attr('cy', cy)
+        .attr('r', DOT_R + 3.5)
+        .attr('fill', cfg.color);
+
+      // Main dot
+      grp.append('circle')
+        .attr('class', 'media-dot')
+        .attr('cx', cx).attr('cy', cy)
+        .attr('r', DOT_R)
+        .attr('fill', cfg.color)
+        .on('click', event => { event.stopPropagation(); openModal(regione, mezzo); })
+        .on('mouseover', event => showDotTooltip(event, regione, mezzo))
+        .on('mousemove', moveTooltip)
+        .on('mouseout', hideTooltip);
+
+      // Mini icon label under dot (only when not filtered)
+      if (!activeFilter && n > 1) {
+        grp.append('text')
+          .attr('x', cx).attr('y', cy + DOT_R + 8)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '7px')
+          .attr('fill', cfg.color)
+          .attr('opacity', 0.8)
+          .attr('pointer-events', 'none')
+          .text(mezzo.substring(0, 3).toUpperCase());
+      }
+    });
+  });
+}
+
+/* ═══════════════════ MODAL ═══════════════════ */
+function openModal(regione, mezzo) {
+  const list = currentData[regione]?.[mezzo] || [];
+  const cfg  = MEDIA[mezzo] || { color: '#888', icon: '' };
+
+  document.getElementById('modal-chip').innerHTML =
+    `<div class="modal-mezzo-chip" style="background:${cfg.color}22;color:${cfg.color};border:1px solid ${cfg.color}44">
+       ${cfg.icon} ${mezzo}
+     </div>`;
+
+  document.getElementById('modal-region-line').textContent =
+    `${regione}  ·  ${list.length} emittent${list.length === 1 ? 'e' : 'i'}`;
+
+  document.getElementById('modal-tbody').innerHTML = list.map((e, i) => `
+    <tr>
+      <td class="row-num">${i + 1}</td>
+      <td>${e.nome}</td>
+      <td><span class="badge ${STATO_CLASS[e.stato] || classifyStato(e.stato)}">${e.stato}</span></td>
+    </tr>`).join('');
+
+  document.getElementById('modal-overlay').classList.add('open');
+
+  // Highlight region
+  d3.selectAll('.region-path').classed('highlighted', d => regionName(d) === regione);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  d3.selectAll('.region-path').classed('highlighted', false);
+}
+
+/* ═══════════════════ SIDEBAR ═══════════════════ */
+function showSidebar(regione) {
+  const mezzi = currentData[regione] || {};
+  const allEmittenti = Object.values(mezzi).flat();
+
+  document.getElementById('sidebar-region-name').textContent = regione;
+  document.getElementById('sidebar-meta').textContent =
+    `${Object.keys(mezzi).length} mezzi  ·  ${allEmittenti.length} emittenti`;
+
+  document.getElementById('sidebar-body').innerHTML =
+    Object.entries(mezzi).map(([mezzo, lista]) => {
+      const cfg = MEDIA[mezzo] || { color: '#888', icon: '' };
+      return `
+        <div class="mezzo-section">
+          <div class="mezzo-header">
+            <span class="mezzo-tag" style="background:${cfg.color}22;color:${cfg.color};border:1px solid ${cfg.color}44">
+              ${cfg.icon} ${mezzo}
+            </span>
+            <span class="mezzo-count">${lista.length}</span>
+          </div>
+          ${lista.map(e => `
+            <div class="emittente-row" onclick="openModal('${regione}','${mezzo}')">
+              <span class="emittente-name">${e.nome}</span>
+              <span class="badge ${STATO_CLASS[e.stato] || classifyStato(e.stato)}">${e.stato}</span>
+            </div>`).join('')}
+        </div>`;
+    }).join('');
+
+  document.getElementById('sidebar').classList.add('open');
+  d3.selectAll('.region-path').classed('highlighted', d => regionName(d) === regione);
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  d3.selectAll('.region-path').classed('highlighted', false);
+}
+
+/* ═══════════════════ STATS ═══════════════════ */
+function updateStats() {
+  const regioni = Object.keys(currentData);
+  const mezziSet = new Set();
+  let emittenti = 0, chiusi = 0;
+
+  regioni.forEach(r => {
+    Object.entries(currentData[r]).forEach(([m, list]) => {
+      mezziSet.add(m);
+      emittenti += list.length;
+      list.forEach(e => { if (e.stato === 'Chiuso') chiusi++; });
+    });
+  });
+
+  document.getElementById('s-regioni').textContent   = regioni.length;
+  document.getElementById('s-mezzi').textContent     = mezziSet.size;
+  document.getElementById('s-emittenti').textContent = emittenti;
+  document.getElementById('s-chiusi').textContent    = chiusi;
+}
+
+/* ═══════════════════ TOOLTIP ═══════════════════ */
+const tipEl = () => document.getElementById('tooltip');
+
+function showRegionTooltip(event, regione) {
+  const mezzi = currentData[regione];
+  let html = `<div class="tooltip-region">${regione}</div>`;
+  if (!mezzi || !Object.keys(mezzi).length) {
+    html += `<div style="font-size:11px;color:#4b5563">Nessun accordo</div>`;
+  } else {
+    Object.entries(mezzi).forEach(([m, list]) => {
+      const cfg = MEDIA[m] || { color: '#888', icon: '' };
+      html += `<div class="tooltip-row">
+        <div class="tooltip-dot" style="background:${cfg.color}"></div>
+        <span>${cfg.icon} ${m}</span>
+        <span style="margin-left:auto;color:#6b7280">${list.length}</span>
+      </div>`;
+    });
+  }
+  tipEl().innerHTML = html;
+  tipEl().style.display = 'block';
+  moveTooltip(event);
+}
+
+function showDotTooltip(event, regione, mezzo) {
+  const list = currentData[regione]?.[mezzo] || [];
+  const cfg  = MEDIA[mezzo] || { color: '#888', icon: '' };
+  const chiusi = list.filter(e => e.stato === 'Chiuso').length;
+  tipEl().innerHTML = `
+    <div class="tooltip-region" style="color:${cfg.color}">${cfg.icon} ${mezzo}</div>
+    <div style="font-size:11px;color:#6b7280;margin-bottom:6px">${regione}</div>
+    <div class="tooltip-row"><span>${list.length} emittenti</span></div>
+    <div class="tooltip-row"><span style="color:#34d399">${chiusi} chiusi</span></div>
+    <div style="font-size:10px;color:#4b5563;margin-top:6px">← click per dettagli</div>`;
+  tipEl().style.display = 'block';
+  moveTooltip(event);
+}
+
+function moveTooltip(event) {
+  const el = tipEl();
+  const x = event.clientX + 14;
+  const y = event.clientY - 14;
+  // Avoid overflow right
+  const maxX = window.innerWidth - el.offsetWidth - 8;
+  el.style.left = Math.min(x, maxX) + 'px';
+  el.style.top  = y + 'px';
+}
+
+function hideTooltip() { tipEl().style.display = 'none'; }
+
+/* ═══════════════════ KEYBOARD ═══════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeSidebar(); closeSheetModal(); }
+});
+
+/* ═══════════════════ RESIZE ═══════════════════ */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (geoData) initMap().catch(() => {});
+  }, 300);
+});
+
+/* ═══════════════════ GOOGLE SHEETS INTEGRATION ═══════════════════ */
+
+const LS_URL_KEY      = 'alchemyx_sheet_url';
+const LS_REFRESH_KEY  = 'alchemyx_auto_refresh';
+let autoRefreshEnabled  = false;
+let autoRefreshTimer    = null;
+
+/* ── Modal open/close ── */
+function openSheetModal() {
+  const saved = localStorage.getItem(LS_URL_KEY) || '';
+  document.getElementById('sheet-url-input').value = saved;
+  // Sync toggle state
+  const saved_refresh = localStorage.getItem(LS_REFRESH_KEY) === 'true';
+  autoRefreshEnabled = saved_refresh;
+  const toggle = document.getElementById('auto-refresh-toggle');
+  toggle.classList.toggle('on', autoRefreshEnabled);
+  document.getElementById('url-error').style.display = 'none';
+  document.getElementById('sheet-modal-overlay').classList.add('open');
+}
+
+function closeSheetModal() {
+  document.getElementById('sheet-modal-overlay').classList.remove('open');
+}
+
+/* ── Toggle auto-refresh ── */
+function toggleAutoRefresh() {
+  autoRefreshEnabled = !autoRefreshEnabled;
+  document.getElementById('auto-refresh-toggle').classList.toggle('on', autoRefreshEnabled);
+}
+
+/* ── Validate Google Sheets URL ── */
+function normalizeSheetUrl(raw) {
+  if (!raw || !raw.trim()) return null;
+  const url = raw.trim();
+  // Already a valid pub CSV url
+  if (url.includes('pub?') && url.includes('output=csv'))  return url;
+  if (url.includes('pub?') && !url.includes('output=csv')) return url + '&output=csv';
+  // Regular spreadsheet URL — convert to pub CSV
+  const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) {
+    const id = match[1];
+    // Try to extract gid (sheet tab)
+    const gidMatch = url.match(/[#&?]gid=(\d+)/);
+    const gid = gidMatch ? gidMatch[1] : '0';
+    return `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv&gid=${gid}`;
+  }
+  return null;
+}
+
+/* ── Connect ── */
+async function connectSheet() {
+  const raw    = document.getElementById('sheet-url-input').value.trim();
+  const csvUrl = normalizeSheetUrl(raw);
+  const errEl  = document.getElementById('url-error');
+
+  if (!csvUrl) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  // Save to localStorage
+  localStorage.setItem(LS_URL_KEY, raw);
+  localStorage.setItem(LS_REFRESH_KEY, autoRefreshEnabled.toString());
+
+  closeSheetModal();
+  await loadFromGoogleSheet(csvUrl);
+
+  if (autoRefreshEnabled) startAutoRefresh(csvUrl);
+  else stopAutoRefresh();
+}
+
+/* ── Disconnect ── */
+function disconnectSheet() {
+  localStorage.removeItem(LS_URL_KEY);
+  localStorage.removeItem(LS_REFRESH_KEY);
+  stopAutoRefresh();
+  setGsStatus(false);
+  loadDemoData();
+  closeSheetModal();
+}
+
+/* ── Load CSV from sheet ── */
+async function loadFromGoogleSheet(csvUrl) {
+  setRefreshing(true);
+  try {
+    const resp = await fetch(csvUrl);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+
+    const result = Papa.parse(text, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: h => h.trim(),
+    });
+
+    if (!result.data || !result.data.length) {
+      throw new Error('Nessun dato nel foglio');
+    }
+
+    const mapped = result.data.map(r => ({
+      regione:        r['Regione']       || r['regione']       || r['REGIONE']       || '',
+      mezzo:          r['Mezzo']         || r['mezzo']         || r['MEZZO']         || '',
+      nome_emittente: r['Nome_Emittente']|| r['Nome Emittente']|| r['nome_emittente']
+                      || r['Emittente']  || r['emittente']     || r['EMITTENTE']     || '',
+      stato_accordo:  r['Stato_Accordo'] || r['Stato Accordo'] || r['stato_accordo']
+                      || r['Stato']      || r['stato']         || r['STATO']         || 'N/D',
+    })).filter(r => r.regione && r.mezzo && r.nome_emittente);
+
+    if (!mapped.length) throw new Error('Nessuna riga valida (verifica colonne: Regione, Mezzo, Emittente, Stato)');
+
+    processRows(mapped);
+    setGsStatus(true);
+    setLastUpdate();
+    document.getElementById('data-status') &&
+      (document.getElementById('data-status').textContent = '');
+
+  } catch (err) {
+    setRefreshing(false);
+    setGsStatus(false, `Errore: ${err.message}`);
+    console.error('GSheets error:', err);
+  }
+  setRefreshing(false);
+}
+
+/* ── Manual refresh ── */
+async function manualRefresh() {
+  const saved = localStorage.getItem(LS_URL_KEY);
+  if (!saved) return;
+  const url = normalizeSheetUrl(saved);
+  if (url) await loadFromGoogleSheet(url);
+}
+
+/* ── Auto-refresh ── */
+function startAutoRefresh(csvUrl) {
+  stopAutoRefresh();
+  autoRefreshTimer = setInterval(() => loadFromGoogleSheet(csvUrl), 5 * 60 * 1000);
+}
+
+function stopAutoRefresh() {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+}
+
+/* ── UI helpers ── */
+function setGsStatus(connected, errorMsg) {
+  document.getElementById('gs-status-disconnected').style.display = connected ? 'none' : 'flex';
+  document.getElementById('gs-status-connected').style.display    = connected ? 'flex' : 'none';
+  if (connected) {
+    // Show short label from URL
+    const raw = localStorage.getItem(LS_URL_KEY) || '';
+    const match = raw.match(/\/spreadsheets\/d\/([^\/]+)/);
+    document.getElementById('gs-sheet-name').textContent = match
+      ? 'Sheet connesso ✓'
+      : 'Google Sheets ✓';
+  }
+}
+
+function setRefreshing(state) {
+  document.getElementById('refresh-icon')?.classList.toggle('refreshing', state);
+}
+
+function setLastUpdate() {
+  const el = document.getElementById('last-update');
+  if (!el) return;
+  const now = new Date();
+  el.textContent = `Aggiornato ${now.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'})}`;
+}
+
+/* ── On page load: restore saved sheet ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const savedUrl  = localStorage.getItem(LS_URL_KEY);
+  const savedRef  = localStorage.getItem(LS_REFRESH_KEY) === 'true';
+  if (savedUrl) {
+    const csvUrl = normalizeSheetUrl(savedUrl);
+    if (csvUrl) {
+      // Wait for map to init, then load sheet
+      setTimeout(async () => {
+        await loadFromGoogleSheet(csvUrl);
+        if (savedRef) startAutoRefresh(csvUrl);
+      }, 800);
+    }
+  }
+});
+</script>
+</body>
+</html>
