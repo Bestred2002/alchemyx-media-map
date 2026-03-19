@@ -914,11 +914,12 @@
 
 /* ── CONFIG ── */
 const MEDIA = {
-  'Online':  { color: '#3B82F6', icon: '🌐' },
-  'DOOH':    { color: '#F59E0B', icon: '📺' },
-  'Radio':   { color: '#8B5CF6', icon: '📻' },
-  'CTV':     { color: '#EF4444', icon: '📡' },
-  'Cinema':  { color: '#10B981', icon: '🎬' },
+  'Online':   { color: '#3B82F6', icon: '🌐' },
+  'DOOH':     { color: '#F59E0B', icon: '📺' },
+  'Radio':    { color: '#8B5CF6', icon: '📻' },
+  'CTV':      { color: '#EF4444', icon: '📡' },
+  'Cinema':   { color: '#10B981', icon: '🎬' },
+  'Agenzia':  { color: '#EC4899', icon: '🏢' },
 };
 
 // Normalize mezzo name to canonical form
@@ -930,6 +931,7 @@ function normalizeMezzo(raw) {
     'online': 'Online',
     'ctv': 'CTV',
     'cinema': 'Cinema',
+    'agenzia': 'Agenzia', 'AGENZIA': 'Agenzia',
   };
   const trimmed = raw.toString().trim();
   return map[trimmed] || (map[trimmed.toLowerCase()] ? map[trimmed.toLowerCase()] : trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase());
@@ -990,7 +992,7 @@ const REGION_ALIASES = {
   'sardegna': 'Sardegna',
 };
 
-/* ── DATI REALI (64 record aggiornati) ── */
+/* ── DATI REALI (67 record aggiornati) ── */
 const DEMO = [
   { regione: "Piemonte", mezzo: "RADIO", nome_emittente: "Radio Manila", stato_accordo: "1° Call" },
   { regione: "Piemonte", mezzo: "RADIO", nome_emittente: "Discoradio", stato_accordo: "1° Call" },
@@ -1056,6 +1058,10 @@ const DEMO = [
   { regione: "Calabria", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
   { regione: "Sicilia", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
   { regione: "Sardegna", mezzo: "CTV", nome_emittente: "Circuito Mediaset", stato_accordo: "3° Call - Inviato bozza accordo" },
+  // Agenzie
+  { regione: "Lombardia", mezzo: "Agenzia", nome_emittente: "FMedia", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lombardia", mezzo: "Agenzia", nome_emittente: "MovingUP", stato_accordo: "Accordo Raggiunto" },
+  { regione: "Lombardia", mezzo: "Agenzia", nome_emittente: "SDVVG", stato_accordo: "Accordo Raggiunto" },
 ];
 
 /* ── STATE ── */
