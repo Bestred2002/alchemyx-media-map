@@ -862,30 +862,22 @@
       <div class="steps-list">
         <div class="step">
           <div class="step-num">1</div>
-          <div>Apri il tuo Google Sheet con i dati dei media partner</div>
+          <div>Apri il tuo Google Sheet → <strong>File → Condividi → Condividi con chiunque abbia il link</strong> (visualizzatore)</div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <div>Vai su <strong>File → Condividi → Pubblica sul web</strong></div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div>Seleziona il foglio → Formato: <code>Valori separati da virgola (.csv)</code> → clicca <strong>Pubblica</strong></div>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <div>Copia il link generato e incollalo qui sotto</div>
+          <div>Copia l'URL della barra del browser (quello con <code>/edit</code>) e incollalo qui sotto</div>
         </div>
       </div>
 
-      <div class="input-label">URL Google Sheet (CSV)</div>
+      <div class="input-label">URL Google Sheet</div>
       <input
         type="url"
         id="sheet-url-input"
         class="url-input"
-        placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+        placeholder="https://docs.google.com/spreadsheets/d/ID/edit"
       />
-      <div class="url-error" id="url-error">URL non valido. Assicurati di usare il link "Pubblica sul web" con formato CSV.</div>
+      <div class="url-error" id="url-error">URL non valido. Incolla l'URL del foglio Google (anche il link di condivisione normale va bene).</div>
 
       <label class="auto-refresh-row">
         <div class="toggle" id="auto-refresh-toggle" onclick="toggleAutoRefresh()"></div>
@@ -1485,6 +1477,8 @@ window.addEventListener('resize', () => {
 
 const LS_URL_KEY      = 'alchemyx_sheet_url';
 const LS_REFRESH_KEY  = 'alchemyx_auto_refresh';
+// Foglio Drive di Fabio — connessione automatica senza pubblicazione
+const DEFAULT_SHEET_ID = '1gK4YBwiMSHw-8HOChflw_7uVXTJU8QE5y49rKSNSM14';
 let autoRefreshEnabled  = false;
 let autoRefreshTimer    = null;
 
@@ -1512,20 +1506,22 @@ function toggleAutoRefresh() {
 }
 
 /* ── Validate Google Sheets URL ── */
+// Uses the gviz/tq endpoint — works with any "chiunque abbia il link" sheet, no publish needed
 function normalizeSheetUrl(raw) {
   if (!raw || !raw.trim()) return null;
   const url = raw.trim();
-  // Already a valid pub CSV url
-  if (url.includes('pub?') && url.includes('output=csv'))  return url;
+  // Already a gviz CSV url
+  if (url.includes('gviz/tq') && url.includes('tqx=out:csv')) return url;
+  // Legacy pub CSV url — keep working
+  if (url.includes('pub?') && url.includes('output=csv')) return url;
   if (url.includes('pub?') && !url.includes('output=csv')) return url + '&output=csv';
-  // Regular spreadsheet URL — convert to pub CSV
+  // Regular spreadsheet URL (edit/share/…) — convert to gviz CSV
   const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
   if (match) {
     const id = match[1];
-    // Try to extract gid (sheet tab)
     const gidMatch = url.match(/[#&?]gid=(\d+)/);
-    const gid = gidMatch ? gidMatch[1] : '0';
-    return `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv&gid=${gid}`;
+    const gid = gidMatch ? `&gid=${gidMatch[1]}` : '';
+    return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv${gid}`;
   }
   return null;
 }
@@ -1649,19 +1645,22 @@ function setLastUpdate() {
   el.textContent = `Aggiornato ${now.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'})}`;
 }
 
-/* ── On page load: restore saved sheet ── */
+/* ── On page load: auto-connect to Drive sheet (or restore saved) ── */
 window.addEventListener('DOMContentLoaded', () => {
-  const savedUrl  = localStorage.getItem(LS_URL_KEY);
-  const savedRef  = localStorage.getItem(LS_REFRESH_KEY) === 'true';
-  if (savedUrl) {
-    const csvUrl = normalizeSheetUrl(savedUrl);
-    if (csvUrl) {
-      // Wait for map to init, then load sheet
-      setTimeout(async () => {
-        await loadFromGoogleSheet(csvUrl);
-        if (savedRef) startAutoRefresh(csvUrl);
-      }, 800);
-    }
+  const savedUrl = localStorage.getItem(LS_URL_KEY);
+  const savedRef = localStorage.getItem(LS_REFRESH_KEY) === 'true';
+
+  // Determine which URL to use: saved custom > default sheet
+  const rawToUse = savedUrl ||
+    `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/gviz/tq?tqx=out:csv`;
+  const csvUrl = normalizeSheetUrl(rawToUse);
+
+  if (csvUrl) {
+    setTimeout(async () => {
+      await loadFromGoogleSheet(csvUrl);
+      // Enable auto-refresh by default (every 5 min) — can be disabled in modal
+      startAutoRefresh(csvUrl);
+    }, 800);
   }
 });
 </script>
