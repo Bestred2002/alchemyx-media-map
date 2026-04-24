@@ -1,0 +1,80 @@
+# robots.txt — Alchemyx.ai
+# Strategia 2026: blocca training AI, permetti search AI e user AI
+# Questo file va caricato su: Dashboard → SEO → Tools and Settings → Robots.txt Editor
+# ATTENZIONE: Wix mantiene la sezione di default in cima — aggiungere SOTTO quella sezione
+
+# ====================================================
+# AI SEARCH BOTS — ALLOW (visibilità nelle risposte AI)
+# ====================================================
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# ====================================================
+# AI TRAINING BOTS — BLOCK (non cedere dati gratis)
+# ====================================================
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# ====================================================
+# STANDARD — tutti gli altri bot
+# ====================================================
+
+User-agent: *
+Allow: /
+Disallow: /_api/
+Disallow: /_functions/
+Disallow: /thank-you
+Disallow: /grazie
+
+Sitemap: https://www.alchemyx.ai/sitemap.xml
+
+# ====================================================
+# NOTE IMPORTANTI
+# ====================================================
+# - GPTBot = raccolta training OpenAI (blocco) vs OAI-SearchBot = SearchGPT live (allow)
+# - ClaudeBot = raccolta training Anthropic (blocco) vs Claude-SearchBot = Claude live search (allow)
+# - CCBot = Common Crawl — IMPORTANTE tenerlo aperto per restare nei corpus LLM open-source
+# - Google-Extended = toggle Gemini training (allow per essere nei risultati Gemini)
+# - Bingbot deve essere allowed — ChatGPT Search usa l'indice Bing (87% match)
+# - Aggiorna questo file ogni 6 mesi verificando nuovi bot su https://darkvisit.com/ai-crawlers

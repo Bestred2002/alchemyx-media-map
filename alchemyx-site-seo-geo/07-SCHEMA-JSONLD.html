@@ -1,0 +1,320 @@
+<!--
+  07 — SCHEMA JSON-LD — Alchemyx.ai
+  Blocchi pronti da inserire in Wix Studio via:
+  Dashboard → SEO Panel → Advanced SEO → Structured Data → Add New Markup
+  OPPURE Dashboard → Settings → Custom Code → Head → All Pages
+
+  LIMITI WIX: max 7.000 caratteri per blocco JSON-LD nel pannello Structured Data.
+  Se un blocco supera il limite, spezzarlo in due markup separati.
+-->
+
+<!-- ============================================================
+     BLOCCO 1: Organization + WebSite + SearchAction
+     Pagina: Homepage IT e EN (inserire in entrambe)
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.alchemyx.ai/#organization",
+      "name": "Alchemyx",
+      "legalName": "Alchemyst LAB Srl",
+      "url": "https://www.alchemyx.ai/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.alchemyx.ai/logo.png",
+        "width": 400,
+        "height": 100
+      },
+      "description": "Alchemyx è la prima piattaforma italiana self-serve guidata da AI che permette alle PMI di pianificare ed eseguire campagne pubblicitarie multicanale — unificando radio, televisione, cinema, DOOH, social media e Google Search — con budget a partire da €2.000 e senza bisogno di un'agenzia.",
+      "foundingDate": "2025-07",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Piazza Castello 19",
+        "addressLocality": "Milano",
+        "postalCode": "20121",
+        "addressCountry": "IT"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@alchemystlab.com",
+        "contactType": "customer service",
+        "availableLanguage": ["Italian", "English"]
+      },
+      "founder": [
+        {
+          "@type": "Person",
+          "@id": "https://www.alchemyx.ai/azienda#fabio-ferrara",
+          "name": "Fabio Ferrara",
+          "jobTitle": "CEO & Co-Founder"
+        },
+        {
+          "@type": "Person",
+          "@id": "https://www.alchemyx.ai/azienda#davide-catalano",
+          "name": "Davide Catalano",
+          "jobTitle": "CTO & Co-Founder"
+        }
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/alchemyx",
+        "https://x.com/AlchemyxAi",
+        "https://www.crunchbase.com/organization/alchemyx"
+      ],
+      "vatID": "IT14297210966",
+      "numberOfEmployees": {
+        "@type": "QuantitativeValue",
+        "minValue": 2,
+        "maxValue": 10
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.alchemyx.ai/#website",
+      "url": "https://www.alchemyx.ai/",
+      "name": "Alchemyx",
+      "publisher": {
+        "@id": "https://www.alchemyx.ai/#organization"
+      },
+      "inLanguage": ["it", "en"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.alchemyx.ai/cerca?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+
+<!-- ============================================================
+     BLOCCO 2: SoftwareApplication
+     Pagina: Homepage IT, /pmi
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://www.alchemyx.ai/#software",
+  "name": "Alchemyx",
+  "alternateName": "Piattaforma AI Alchemyx",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Advertising Platform",
+  "operatingSystem": "Web browser",
+  "url": "https://www.alchemyx.ai/",
+  "description": "Piattaforma AI self-serve per la pianificazione e gestione di campagne pubblicitarie multicanale (radio, TV, cinema, DOOH, social, Google) per PMI italiane. Budget minimo €2.000, commissione 13,98%.",
+  "featureList": [
+    "Pianificazione AI multicanale online e offline",
+    "Acquisto automatico spazi pubblicitari",
+    "Generazione AI di copy, audio, video e immagini",
+    "Dashboard reporting unificata",
+    "White label per agenzie",
+    "Gestione campagne radio, TV, cinema, DOOH, social, Google"
+  ],
+  "availableOnDevice": "Desktop, Mobile, Tablet",
+  "inLanguage": ["it", "en"],
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "priceSpecification": [
+      {
+        "@type": "UnitPriceSpecification",
+        "price": "13.98",
+        "priceCurrency": "EUR",
+        "unitText": "percentuale sul budget investito",
+        "description": "Commissione Alchemyx sul budget pubblicitario"
+      },
+      {
+        "@type": "UnitPriceSpecification",
+        "minPrice": "2000",
+        "priceCurrency": "EUR",
+        "unitText": "per campagna",
+        "description": "Budget minimo per campagna"
+      }
+    ],
+    "availability": "https://schema.org/PreOrder",
+    "availabilityStarts": "2027-01-01"
+  },
+  "provider": {
+    "@id": "https://www.alchemyx.ai/#organization"
+  },
+  "releaseNotes": "MVP luglio 2026. Lancio commerciale Italia Q1 2027. Espansione Spagna 2028, Francia e Germania 2029-2030, USA 2031.",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Piccole e medie imprese italiane (PMI)",
+    "geographicArea": {
+      "@type": "Country",
+      "name": "Italy"
+    }
+  }
+}
+</script>
+
+<!-- ============================================================
+     BLOCCO 3: FAQPage — IT
+     Pagina: Homepage IT, /pmi
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Cos'è Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Alchemyx è la prima piattaforma italiana self-serve guidata da AI che permette alle PMI di pianificare ed eseguire campagne pubblicitarie multicanale — unificando radio, televisione, cinema, DOOH, social media e Google Search — con budget a partire da €2.000 e senza bisogno di un'agenzia. Sviluppata da Alchemyst LAB Srl, startup innovativa con sede a Piazza Castello 19, 20121 Milano."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto costa usare Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Alchemyx applica una commissione del 13,98% sul budget pubblicitario investito. Non ci sono costi fissi o abbonamenti nella versione base. Il budget minimo per avviare una campagna è di €2.000. La versione Premium include reporting avanzato con un costo di abbonamento annuale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quali canali pubblicitari posso usare con Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Con Alchemyx puoi pianificare campagne su: radio (locale e nazionale), televisione addressable e CTV (connected TV), cinema, DOOH (digital out-of-home, billboard digitali), social media (Meta, TikTok, LinkedIn) e Google (Search e Display). Tutti i canali sono gestibili da un'unica interfaccia."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quando sarà disponibile Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Il lancio ufficiale sul mercato italiano è previsto per il primo semestre del 2027. L'MVP sarà pronto a luglio 2026, seguito da una fase pilota a settembre 2026. Puoi richiedere l'accesso anticipato iscrivendoti alla white list su alchemyx.ai."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Alchemyx è diverso da Mediaset AdManager o Sky Advertising Manager?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sì. Mediaset AdManager e Sky Advertising Manager permettono di fare pubblicità solo sui canali delle rispettive concessionarie. Alchemyx è indipendente e aggrega tutti i canali — radio, cinema, DOOH e social — in un'unica piattaforma, senza essere legato a nessun editore specifico."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ho bisogno di competenze tecniche per usare Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Alchemyx è progettata per PMI senza competenze tecniche o risorse interne dedicate alla pubblicità. Il processo è guidato passo-passo dall'AI: inserisci obiettivo, budget e target, e la piattaforma si occupa di tutto il resto."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Posso creare le creatività direttamente su Alchemyx?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sì. Alchemyx include strumenti AI per creare copy, audio, video e immagini direttamente sulla piattaforma. Puoi anche caricare creatività esistenti: l'AI le adatterà automaticamente per ogni canale e formato richiesto."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- ============================================================
+     BLOCCO 4: Person — Fabio Ferrara
+     Pagina: /azienda
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://www.alchemyx.ai/azienda#fabio-ferrara",
+  "name": "Fabio Ferrara",
+  "jobTitle": "CEO & Co-Founder",
+  "worksFor": {
+    "@id": "https://www.alchemyx.ai/#organization"
+  },
+  "description": "CEO e Co-Founder di Alchemyst LAB Srl. Con oltre 15 anni di esperienza in media planning e pubblicità, guida la visione di Alchemyx per democratizzare la pubblicità multicanale per le PMI italiane.",
+  "knowsAbout": ["media planning", "pubblicità multicanale", "advertising technology", "PMI marketing"],
+  "url": "https://www.alchemyx.ai/azienda",
+  "sameAs": [
+    "https://www.linkedin.com/in/fabioferrara"
+  ]
+}
+</script>
+
+<!-- ============================================================
+     BLOCCO 5: Person — Davide Catalano
+     Pagina: /azienda
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://www.alchemyx.ai/azienda#davide-catalano",
+  "name": "Davide Catalano",
+  "jobTitle": "CTO & Co-Founder",
+  "worksFor": {
+    "@id": "https://www.alchemyx.ai/#organization"
+  },
+  "description": "CTO e Co-Founder di Alchemyst LAB Srl. Responsabile di tutto lo sviluppo tecnologico e AI di Alchemyx.",
+  "knowsAbout": ["artificial intelligence", "AI agents", "advertising technology", "software development"],
+  "url": "https://www.alchemyx.ai/azienda"
+}
+</script>
+
+<!-- ============================================================
+     BLOCCO 6: BreadcrumbList
+     Pagina: /pmi, /agenzie, /media, /azienda (una per pagina)
+     Esempio per /pmi:
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.alchemyx.ai/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Per le PMI",
+      "item": "https://www.alchemyx.ai/pmi"
+    }
+  ]
+}
+</script>
+
+<!--
+  ISTRUZIONI PER CLAUDE CO-WORK:
+
+  1. Apri Wix Studio Editor → seleziona la pagina Homepage IT
+  2. Vai su Settings (icona ingranaggio) → SEO Panel → Advanced SEO → Structured Data
+  3. Clicca "+ Add New Markup"
+  4. Incolla BLOCCO 1 (Organization+WebSite) — max 7000 chars
+  5. Salva
+  6. Clicca "+ Add New Markup" di nuovo
+  7. Incolla BLOCCO 2 (SoftwareApplication)
+  8. Salva
+  9. Clicca "+ Add New Markup" di nuovo
+  10. Incolla BLOCCO 3 (FAQPage)
+  11. Salva
+
+  Per /azienda:
+  12. Seleziona pagina /azienda → SEO → Structured Data
+  13. Aggiungi BLOCCO 4 (Fabio Ferrara)
+  14. Aggiungi BLOCCO 5 (Davide Catalano)
+
+  Per ogni pagina con breadcrumb:
+  15. Adatta BLOCCO 6 con nome e URL della pagina specifica
+  16. Aggiungi come structured data della pagina
+
+  VERIFICA: dopo la pubblicazione, testa su https://validator.schema.org/
+-->

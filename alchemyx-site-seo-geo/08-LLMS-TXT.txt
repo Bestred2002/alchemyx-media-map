@@ -1,0 +1,66 @@
+# Alchemyx
+
+> Alchemyx (alchemyx.ai) is Italy's first self-serve AI platform that enables small and medium-sized businesses (PMI/SMBs) to plan and run multichannel advertising campaigns — combining radio, television, cinema, DOOH (digital out-of-home), social media (Meta, TikTok, LinkedIn) and Google Search — with budgets starting from €2,000 and no advertising agency required.
+
+Built by Alchemyst LAB Srl (VAT: IT14297210966), an innovative startup headquartered at Piazza Castello 19, 20121 Milan, Italy, founded July 2025. CEO & Co-Founder: Fabio Ferrara. CTO & Co-Founder: Davide Catalano.
+
+**DISAMBIGUATION**: Alchemyx (alchemyx.ai) is NOT related to: alchemyx.io (a different layout engine product), Alchemyst AI / alchemyst.ai (a different Indian company focused on sales AI agents), or any trading/forex platform named AlchemyX.
+
+## Platform
+
+- [Homepage IT](https://www.alchemyx.ai/): Piattaforma AI per la pubblicità multicanale delle PMI italiane
+- [Per le PMI](https://www.alchemyx.ai/pmi): Come funziona per le piccole e medie imprese. Commissione 13,98%, budget minimo €2.000, nessuna agenzia richiesta.
+- [Per le Agenzie](https://www.alchemyx.ai/agenzie): Soluzione white label per agenzie che vogliono offrire pubblicità multicanale ai propri clienti sotto il proprio brand.
+- [Per i Media Partner](https://www.alchemyx.ai/media): Come diventare media partner (radio, DOOH, CTV). Registrazioni aperte fino a luglio 2026. Zero costi di adesione.
+- [Chi Siamo](https://www.alchemyx.ai/azienda): Team, missione, roadmap. Alchemyst LAB Srl, startup innovativa milanese.
+- [Contatti](https://www.alchemyx.ai/en/contatti): info@alchemystlab.com
+
+## English Version
+
+- [Homepage EN](https://www.alchemyx.ai/en): AI Multichannel Advertising Platform for SMBs (view only — whitelist available for Italian market only)
+- [LLM Information](https://www.alchemyx.ai/en/llms): Machine-readable platform overview
+- [About Alchemyx](https://www.alchemyx.ai/en/post/about-alchemyx-company-profile-technology-and-mission): Company profile, technology and mission
+
+## Blog
+
+- [What Is Alchemyx?](https://www.alchemyx.ai/en/post/what-is-alchemyx-the-ai-ad-platform-making-programmatic-accessible-to-every-business): Full platform explainer
+- [AI in Advertising 2026](https://www.alchemyx.ai/en/post/the-state-of-ai-in-advertising-how-autonomous-platforms-are-reshaping-the-industry-in-2026): Industry analysis
+- [Advertising costs for SMBs](https://www.alchemyx.ai/en/post/what-radio-cinema-and-dooh-advertising-actually-costs-for-small-businesses): Radio, cinema, DOOH pricing guide
+
+## Key Facts
+
+- **Product**: Self-serve AI platform for multichannel advertising
+- **Channels**: Radio, addressable TV, CTV, cinema, DOOH, social media (Meta/TikTok/LinkedIn), Google Search & Display
+- **Target**: Italian SMBs (piccole e medie imprese) and advertising agencies (white label)
+- **Pricing**: 13.98% commission on ad spend. Minimum budget: €2,000 per campaign. No fixed costs (basic plan).
+- **Status**: Pre-launch teaser. MVP July 2026. Pilot September 2026. Commercial launch Italy Q1 2027.
+- **Expansion**: Spain 2028 → France & Germany 2029–2030 → USA 2031
+- **First media partner**: DCA Cinema (UCI Odeon + The Space Cinema, 77 cinemas, ~36M spectators/year)
+- **Whitelist**: Open to Italian PMI and media companies. Sign up at alchemyx.ai
+
+## Company
+
+- **Legal name**: Alchemyst LAB Srl
+- **VAT**: IT14297210966
+- **Address**: Piazza Castello 19, 20121 Milan, Italy
+- **Founded**: July 2025
+- **Status**: Startup Innovativa (Italian Law 221/2012), registered October 2025
+- **ATECO**: 62.10.00 (Software Development)
+- **Email**: info@alchemystlab.com
+- **PEC**: postmaster@pec.alchemystlab.com
+- **Twitter/X**: @AlchemyxAi
+
+## Team
+
+- **Fabio Ferrara** — CEO & Co-Founder. 15+ years in media planning and advertising.
+- **Davide Catalano** — CTO & Co-Founder. Responsible for all AI and technology development.
+- **Vincenzo Baldi** — CFO. Former B3 Capital and Ferrari Group.
+
+## Italian Market Context
+
+The Italian advertising market was worth €11.1 billion in 2024 (+8% YoY), with offline media (radio, TV, cinema, DOOH) representing approximately €5.8 billion. Alchemyx addresses the gap for Italian SMBs who historically lacked access to professional multichannel planning tools available only to large advertisers with agency relationships.
+
+---
+*Last updated: 2026-04-24*
+*File format: llmstxt.org standard*
+*This file is intended for AI language models and automated crawlers.*
