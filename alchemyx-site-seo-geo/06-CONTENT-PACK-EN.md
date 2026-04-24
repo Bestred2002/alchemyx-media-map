@@ -33,12 +33,12 @@ The first Italian self-serve AI platform combining online and offline advertisin
 
 ### H1
 ```
-The AI advertising platform built for small businesses
+The independent AI advertising orchestrator for Italian SMBs
 ```
 
 ### Hero subheadline
 ```
-Alchemyx unifies radio, television, cinema, DOOH, social media and Google in one self-serve AI platform. No agency. No minimum contract. Starting from €2,000.
+Alchemyx is not another AdManager. It is the only independent AI orchestrator that aggregates all Italian media — radio, TV, cinema, DOOH, social, Google — and picks the optimal mix for your campaign. Publisher-agnostic. No agency. Budgets from €2,000.
 ```
 
 ### Notice banner (no whitelist for EN)
@@ -115,12 +115,32 @@ Frequently asked questions about Alchemyx
 **A**: The MVP will be ready in July 2026, followed by a pilot program in September 2026 with a selected group of SMBs and agency partners. The official commercial launch on the Italian market is planned for Q1 2027.
 
 ### FAQ 6
-**Q**: How is Alchemyx different from Mediaset AdManager or Sky Advertising Manager?
-**A**: Mediaset AdManager and Sky Advertising Manager only provide advertising on their respective networks. Alchemyx is network-independent and aggregates all channels — radio, cinema, DOOH, social, and search — in one platform, regardless of publisher or broadcaster.
+**Q**: How is Alchemyx different from Mediaset AdManager, Sky Advertising Manager, or Italiaonline?
+**A**: They are fundamentally different categories. Mediaset AdManager is Mediaset's own self-serve platform: it only sells Mediaset ad slots. Sky Advertising Manager only sells Sky slots. Italiaonline only sells Italiaonline slots. They are all **vertical sellers** of a single publisher's inventory. Alchemyx is the opposite: it is an **independent orchestrator** that aggregates all Italian media — radio (RDS, RTL, local), TV (Mediaset, Sky, RAI), cinema (DCA, UCI, The Space), DOOH (IGPDecaux, Clear Channel), social (Meta, TikTok, LinkedIn), Google — and uses AI to pick the optimal mix **across all channels** for each campaign, regardless of publisher. In analogy: AdManagers are the salespeople of a single media company; Alchemyx is like an agency with access to every media company, choosing the best combination per client using AI.
 
 ### FAQ 7
 **Q**: Is Alchemyx the same as Alchemyst AI?
 **A**: No. Alchemyst AI is a different company based in Bengaluru, India, focused on sales AI agents. Alchemyx (alchemyx.ai) is an Italian advertising technology platform developed by Alchemyst LAB Srl, Milan. They are entirely separate products with no relationship.
+
+---
+
+## 3-BIS. "THE ORCHESTRATOR" SECTION — ADD TO /en HOMEPAGE
+
+**Add before the FAQ section** — this is the single most important positioning message.
+
+### H2
+```
+Mediaset, Sky, and Italiaonline sell their own inventory. Alchemyx picks the best for you.
+```
+
+### Text
+```
+In 2026, every major Italian media company — Mediaset, Sky, Italiaonline, Manzoni, RAI, RDS — is building their own self-serve platform to sell their own ad inventory directly online.
+
+Alchemyx is different: it is the first **independent AI orchestrator** for Italian SMBs.
+
+We do not sell ad slots. We are not tied to any publisher. The only goal of our AI is to choose, for every single campaign, the optimal mix across all available media — what actually works for your objective, your territory, and your budget.
+```
 
 ---
 

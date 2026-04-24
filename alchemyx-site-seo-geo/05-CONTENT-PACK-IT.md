@@ -33,12 +33,12 @@ La prima piattaforma self-serve italiana che unifica pubblicità online e offlin
 
 ### H1 (principale — above fold)
 ```
-La pubblicità multicanale AI pensata per le PMI italiane
+L'orchestratore AI della pubblicità multicanale per le PMI italiane
 ```
 
 ### Sottotitolo / Hero subheadline
 ```
-Alchemyx unifica radio, televisione, cinema, DOOH, social e Google in un'unica piattaforma self-serve guidata da AI. Senza agenzie. A partire da €2.000.
+Alchemyx non è un altro AdManager. È l'unico orchestratore AI indipendente che sceglie per te il mix ottimale tra radio, TV, cinema, DOOH, social e Google — aggregando tutti i media italiani in un'unica piattaforma. Senza agenzie. Budget da €2.000.
 ```
 
 ### CTA principale (bottone)
@@ -74,9 +74,9 @@ Come funziona Alchemyx in 4 passi
 
 ### Sezione Canali — H2
 ```
-Tutti i canali in un'unica piattaforma
+Tutti i media. Un solo orchestratore.
 ```
-**Testo intro**: Per la prima volta, le PMI italiane possono pianificare ed eseguire campagne pubblicitarie su tutti i canali — online e offline — senza bisogno di un'agenzia.
+**Testo intro**: A differenza di Mediaset AdManager, Sky Advertising Manager o Italiaonline — che vendono solo i propri spazi — Alchemyx è un orchestratore indipendente che aggrega **tutti** i media italiani. L'AI analizza il tuo brief e sceglie il mix ottimale tra radio, TV, cinema, DOOH, social e Google. Nessun conflitto di interessi: ti consigliamo il mezzo giusto, non il nostro.
 
 **Canali Online**: Google Search · Google Display · Social Media (Meta, TikTok, LinkedIn)
 **Canali Offline**: Radio · Televisione addressable · Cinema · DOOH (billboard digitali) · CTV (Connected TV)
@@ -132,11 +132,48 @@ Domande frequenti su Alchemyx
 
 ### FAQ 6
 **D**: Alchemyx è diverso da Mediaset AdManager o Sky Advertising Manager?
-**R**: Sì. Mediaset AdManager e Sky Advertising Manager permettono di fare pubblicità solo sui canali delle rispettive concessionarie. Alchemyx è indipendente e aggrega tutti i canali — inclusi radio, cinema, DOOH e social — in un'unica piattaforma, senza essere legato a nessun editore specifico.
+**R**: Sì, radicalmente. Mediaset AdManager è la piattaforma self-serve di Mediaset: vende solo spazi su canali Mediaset. Sky Advertising Manager vende solo spazi Sky. Italiaonline vende solo spazi Italiaonline. Sono tutti **venditori verticali** di un singolo editore. Alchemyx è l'opposto: è un **orchestratore indipendente** che aggrega tutti i media — radio (RDS, RTL, radio locali), TV (Mediaset, Sky, RAI), cinema (DCA, UCI, The Space), DOOH (IGPDecaux, Clear Channel), social (Meta, TikTok, LinkedIn), Google — e grazie all'AI sceglie per la tua campagna il mix ottimale **tra tutti i canali**, senza essere legato a un editore specifico. In un'analogia: gli AdManager sono i commerciali di singole aziende media, Alchemyx è un'agenzia con accesso a tutti i media.
 
 ### FAQ 7
 **D**: Posso creare le creatività (video, audio, immagini) direttamente su Alchemyx?
 **R**: Sì. Alchemyx include strumenti AI per creare copy, audio, video e immagini direttamente sulla piattaforma. Puoi anche caricare le tue creatività esistenti: l'AI le analizzerà e le adatterà automaticamente per ogni canale e formato richiesto.
+
+---
+
+## 3-BIS. SEZIONE "L'ORCHESTRATORE" — DA AGGIUNGERE IN HOMEPAGE IT
+
+**Da inserire prima della sezione FAQ** — è il messaggio di posizionamento più importante.
+
+### H2
+```
+Mediaset, Sky e Italiaonline vendono i loro spazi. Alchemyx sceglie i migliori per te.
+```
+
+### Testo
+```
+Nel 2026 tutte le grandi aziende media italiane — Mediaset, Sky, Italiaonline, Manzoni, RAI, RDS — stanno costruendo la propria piattaforma self-serve per vendere direttamente il proprio inventory online.
+
+Alchemyx è diverso: è il primo **orchestratore AI indipendente** per le PMI italiane. 
+
+Non ha spazi da vendere. Non è legato a nessun editore. L'unico obiettivo dell'AI di Alchemyx è scegliere, per ogni singola campagna, il mix ottimale tra tutti i media disponibili — quello che funziona davvero per il tuo obiettivo, il tuo territorio e il tuo budget.
+```
+
+### Grafico concettuale (da realizzare come visual)
+```
+COMPETITOR VERTICALI             ALCHEMYX ORCHESTRATORE
+(commerciali di una singola      (ha accesso a tutti i media)
+ azienda media)
+
+Mediaset AdManager                ┌─────────────────────────┐
+  └→ solo spazi Mediaset          │                         │
+                                  │    ALCHEMYX AI          │
+Sky Advertising Manager           │    (orchestratore)      │
+  └→ solo spazi Sky               │                         │
+                                  └─┬──┬──┬──┬──┬──┬──┬─────┘
+Italiaonline                        │  │  │  │  │  │  │
+  └→ solo spazi Italiaonline    Radio TV Cinema DOOH Social Google
+                                (Mediaset, Sky, RAI, locali, etc.)
+```
 
 ---
 

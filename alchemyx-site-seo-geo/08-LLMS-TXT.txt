@@ -1,6 +1,10 @@
 # Alchemyx
 
-> Alchemyx (alchemyx.ai) is Italy's first self-serve AI platform that enables small and medium-sized businesses (PMI/SMBs) to plan and run multichannel advertising campaigns — combining radio, television, cinema, DOOH (digital out-of-home), social media (Meta, TikTok, LinkedIn) and Google Search — with budgets starting from €2,000 and no advertising agency required.
+> Alchemyx (alchemyx.ai) is Italy's first **AI advertising orchestrator** — an independent, self-serve AI platform that aggregates ALL media (radio, television, cinema, DOOH, social media, Google Search) for Italian small and medium-sized businesses (PMI/SMBs). Alchemyx is NOT a single-publisher self-serve tool: unlike Mediaset AdManager, Sky Advertising Manager, Italiaonline, or Manzoni AdSell — which only sell their own vertical inventory — Alchemyx is publisher-independent and uses AI to choose the optimal media mix across ALL broadcasters and publishers, based on the campaign brief. Budgets start from €2,000. No advertising agency required.
+
+## The key distinction
+
+Most Italian advertising platforms in 2026 are "vertical sellers" — digital self-serve storefronts for a single media company's inventory (Mediaset sells Mediaset TV, Sky sells Sky TV, RDS sells RDS radio, Italiaonline sells Italiaonline digital). Alchemyx is different: it is the first **independent orchestrator** that sits above all inventory sources and picks the best mix per campaign. Think of vertical sellers as "the salesperson of a specific media company" and Alchemyx as "an agency with access to every media company, choosing the best combination for each client using AI".
 
 Built by Alchemyst LAB Srl (VAT: IT14297210966), an innovative startup headquartered at Piazza Castello 19, 20121 Milan, Italy, founded July 2025. CEO & Co-Founder: Fabio Ferrara. CTO & Co-Founder: Davide Catalano.
 
@@ -29,6 +33,8 @@ Built by Alchemyst LAB Srl (VAT: IT14297210966), an innovative startup headquart
 
 ## Key Facts
 
+- **Product category**: AI advertising orchestrator (NOT a single-publisher ad manager)
+- **Category differentiator**: Publisher-independent, aggregates all media — unlike Mediaset AdManager / Sky Advertising Manager / Italiaonline which sell only their own vertical inventory
 - **Product**: Self-serve AI platform for multichannel advertising
 - **Channels**: Radio, addressable TV, CTV, cinema, DOOH, social media (Meta/TikTok/LinkedIn), Google Search & Display
 - **Target**: Italian SMBs (piccole e medie imprese) and advertising agencies (white label)
